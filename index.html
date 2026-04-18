@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>語言學習播放軟體</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 引入 JSZip 處理打包檔案 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
+    <!-- 移除了 JSZip 和 lamejs 的引入，不再需要剪輯功能 -->
 </head>
 <body>
     <div class="app-container">
@@ -25,6 +23,9 @@
             <h2>播放控制</h2>
             <div class="time-display">
                 <span id="current-time">00:00:00</span> / <span id="duration-time">00:00:00</span>
+            </div>
+            <div class="progress-container">
+                <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1">
             </div>
             <audio id="main-audio"></audio>
             
@@ -79,11 +80,11 @@
             <h2>標記區間</h2>
             <div class="control-group">
                 <button id="btn-mark-start">設定開始標記</button>
-                <span id="mark-start-time" class="mark-display">--:--:--</span>
+                <input type="text" id="mark-start-time" class="mark-display time-input" value="00:00:00">
             </div>
             <div class="control-group">
                 <button id="btn-mark-end">設定結束標記</button>
-                <span id="mark-end-time" class="mark-display">--:--:--</span>
+                <input type="text" id="mark-end-time" class="mark-display time-input" value="00:00:00">
             </div>
             <div class="control-group">
                 <label>區間命名：</label>
@@ -118,15 +119,43 @@
                     </tbody>
                 </table>
             </div>
-
-            <!-- 剪輯區 -->
-            <div class="clip-section">
-                <h3>剪輯工具</h3>
-                <button id="btn-clip-selected" class="danger-btn">剪輯勾選區間</button>
-                <button id="btn-clip-all" class="danger-btn">剪輯全部區間</button>
-                <p class="help-text">提示：剪輯處理可能會花費一點時間，將會下載一個以音檔命名的 ZIP 檔。</p>
-            </div>
         </section>
+
+        <!-- 彈出式空白表單視窗 -->
+        <div id="blank-table-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h3>空白/批次資料輸入</h3>
+                <p class="help-text">可在此直接填寫，或是以 Tab/空格/逗號分隔貼上資料：<br><code>名稱 開始時間 結束時間</code></p>
+                <textarea id="import-text" rows="5" style="width:100%; box-sizing:border-box; margin-bottom: 10px;" placeholder="例如:&#10;第一段 00:00:00 00:01:00&#10;第二段 00:01:00 00:02:00"></textarea>
+                <div style="text-align: right; margin-bottom: 10px;">
+                    <button id="btn-parse-text" class="primary-btn">解析貼上的資料</button>
+                </div>
+                
+                <h4>手動填寫</h4>
+                <div class="table-responsive" style="max-height: 40vh; overflow-y: auto;">
+                    <table id="manual-table">
+                        <thead>
+                            <tr>
+                                <th>區間名稱</th>
+                                <th>開始時間</th>
+                                <th>結束時間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="manual-tbody">
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button id="btn-add-manual-row">新增一列</button>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: right; border-top: 1px solid #ccc; padding-top: 15px; gap: 10px; display: flex; justify-content: flex-end;">
+                    <button id="btn-close-modal">取消</button>
+                    <button id="btn-apply-manual" class="primary-btn">套用並覆蓋目前資料</button>
+                </div>
+            </div>
+        </div>
 
     </div>
     <script src="script.js"></script>
