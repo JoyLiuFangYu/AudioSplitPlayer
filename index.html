@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>語言學習播放軟體</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 JSZip 處理打包檔案 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <h1>語言學習播放軟體</h1>
+        
+        <!-- 檔案載入區 -->
+        <section class="card">
+            <h2>載入音檔</h2>
+            <input type="file" id="audio-input" accept="audio/*">
+            <p id="current-filename">尚未載入音檔</p>
+        </section>
+
+        <!-- 播放控制區 -->
+        <section class="card" id="player-section">
+            <h2>播放控制</h2>
+            <div class="time-display">
+                <span id="current-time">00:00:00</span> / <span id="duration-time">00:00:00</span>
+            </div>
+            <audio id="main-audio"></audio>
+            
+            <div class="control-group">
+                <button id="btn-play-pause">播放</button>
+            </div>
+
+            <div class="control-group">
+                <label>音量：</label>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+            </div>
+
+            <div class="control-group">
+                <label>播放速度：</label>
+                <select id="speed-select">
+                    <option value="0.75">0.75 倍</option>
+                    <option value="1" selected>1 倍 (正常)</option>
+                    <option value="1.25">1.25 倍</option>
+                    <option value="1.5">1.5 倍</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>倒轉：</label>
+                <button class="btn-skip" data-dir="-1" data-sec="3">-3秒</button>
+                <button class="btn-skip" data-dir="-1" data-sec="5">-5秒</button>
+                <button class="btn-skip" data-dir="-1" data-sec="10">-10秒</button>
+                <button class="btn-skip" data-dir="-1" data-sec="30">-30秒</button>
+            </div>
+
+            <div class="control-group">
+                <label>快進：</label>
+                <button class="btn-skip" data-dir="1" data-sec="3">+3秒</button>
+                <button class="btn-skip" data-dir="1" data-sec="5">+5秒</button>
+                <button class="btn-skip" data-dir="1" data-sec="10">+10秒</button>
+                <button class="btn-skip" data-dir="1" data-sec="30">+30秒</button>
+            </div>
+
+            <div class="control-group">
+                <label>跳轉至特定時間：</label>
+                <div class="jump-inputs">
+                    <input type="number" id="jump-h" min="0" placeholder="時" value="0"> :
+                    <input type="number" id="jump-m" min="0" max="59" placeholder="分" value="0"> :
+                    <input type="number" id="jump-s" min="0" max="59" placeholder="秒" value="0">
+                    <button id="btn-jump">跳轉</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 區間標記區 -->
+        <section class="card">
+            <h2>標記區間</h2>
+            <div class="control-group">
+                <button id="btn-mark-start">設定開始標記</button>
+                <span id="mark-start-time" class="mark-display">--:--:--</span>
+            </div>
+            <div class="control-group">
+                <button id="btn-mark-end">設定結束標記</button>
+                <span id="mark-end-time" class="mark-display">--:--:--</span>
+            </div>
+            <div class="control-group">
+                <label>區間命名：</label>
+                <input type="text" id="mark-name" placeholder="請輸入區間名稱">
+            </div>
+            <button id="btn-save-mark" class="primary-btn">儲存區間</button>
+        </section>
+
+        <!-- 區間資料表區 -->
+        <section class="card">
+            <h2>區間資料表</h2>
+            <div class="data-controls">
+                <button id="btn-export-data">匯出資料表</button>
+                <button id="btn-import-data" onclick="document.getElementById('import-input').click()">開啟區間資料</button>
+                <input type="file" id="import-input" accept=".json" style="display:none">
+                <button id="btn-clear-data">開啟空白資料表</button>
+            </div>
+            
+            <div class="table-responsive">
+                <table id="intervals-table">
+                    <thead>
+                        <tr>
+                            <th>選取</th>
+                            <th>區間名稱</th>
+                            <th>開始時間</th>
+                            <th>結束時間</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="intervals-tbody">
+                        <!-- 資料會動態插入在這裡 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 剪輯區 -->
+            <div class="clip-section">
+                <h3>剪輯工具</h3>
+                <button id="btn-clip-selected" class="danger-btn">剪輯勾選區間</button>
+                <button id="btn-clip-all" class="danger-btn">剪輯全部區間</button>
+                <p class="help-text">提示：剪輯處理可能會花費一點時間，將會下載一個以音檔命名的 ZIP 檔。</p>
+            </div>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

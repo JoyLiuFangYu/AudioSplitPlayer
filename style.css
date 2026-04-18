@@ -1,0 +1,168 @@
+/* 基本設定，手機優先 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 10px;
+}
+
+.app-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+h2 {
+    font-size: 1.2rem;
+    margin-top: 0;
+    color: #34495e;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 5px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.control-group {
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+label {
+    min-width: 80px;
+    font-weight: bold;
+}
+
+button {
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    color: #2c3e50;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #e0e6ed;
+}
+
+button.primary-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+button.primary-btn:hover {
+    background-color: #2980b9;
+}
+
+button.danger-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+}
+
+button.danger-btn:hover {
+    background-color: #c0392b;
+}
+
+input[type="text"], input[type="number"], select {
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    flex-grow: 1;
+    max-width: 200px;
+}
+
+input[type="number"] {
+    max-width: 70px;
+}
+
+input[type="range"] {
+    flex-grow: 1;
+}
+
+.time-display, .mark-display {
+    font-family: monospace;
+    font-size: 1.1rem;
+    background: #eaeded;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.jump-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+table th, table td {
+    border: 1px solid #ecf0f1;
+    padding: 10px;
+    text-align: center;
+}
+
+table th {
+    background-color: #f7f9fa;
+}
+
+.data-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.clip-section {
+    margin-top: 20px;
+    border-top: 2px dashed #ecf0f1;
+    padding-top: 15px;
+}
+
+.help-text {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+/* 針對較大螢幕調整 */
+@media (min-width: 600px) {
+    body {
+        padding: 20px;
+    }
+    h1 {
+        font-size: 2rem;
+    }
+}
