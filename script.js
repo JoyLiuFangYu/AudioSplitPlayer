@@ -225,39 +225,34 @@ btnClearData.addEventListener('click', () => {
     }
 });
 
-// Clipping Implementation using Web Audio API
-async function encodeWAV(samples, sampleRate) {
-    const buffer = new ArrayBuffer(44 + samples.length * 2);
-    const view = new DataView(buffer);
-
-    // Write WAV header
-    const writeString = (view, offset, string) => {
-        for (let i = 0; i < string.length; i++) {
-            view.setUint8(offset + i, string.charCodeAt(i));
-        }
-    };
-    
-    writeString(view, 0, 'RIFF');
-    view.setUint32(4, 36 + samples.length * 2, true);
-    writeString(view, 8, 'WAVE');
-    writeString(view, 12, 'fmt ');
-    view.setUint32(16, 16, true);
-    view.setUint16(20, 1, true); // PCM format
-    view.setUint16(22, 1, true); // 1 channel (mono for simplicity, or 2 for stereo)
-    view.setUint32(24, sampleRate, true);
-    view.setUint32(28, sampleRate * 2, true); // byte rate = sampleRate * blockAlign
-    view.setUint16(32, 2, true); // block align
-    view.setUint16(34, 16, true); // bits per sample
-    writeString(view, 36, 'data');
-    view.setUint32(40, samples.length * 2, true);
-
+// Clipping Implementation using Web Audio API and Lamejs (MP3)
+async function encodeMP3(samples, sampleRate) {
     // float to 16-bit PCM
-    let offset = 44;
-    for (let i = 0; i < samples.length; i++, offset += 2) {
+    const int16Samples = new Int16Array(samples.length);
+    for (let i = 0; i < samples.length; i++) {
         let s = Math.max(-1, Math.min(1, samples[i]));
-        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        int16Samples[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
     }
-    return buffer;
+
+    // Initialize lamejs MP3 encoder (channels, samplerate, kbps)
+    const mp3encoder = new lamejs.Mp3Encoder(1, sampleRate, 128); 
+    const mp3Data = [];
+    
+    // lamejs requires blocks of 1152 samples
+    const sampleBlockSize = 1152; 
+    for (let i = 0; i < int16Samples.length; i += sampleBlockSize) {
+        const sampleChunk = int16Samples.subarray(i, i + sampleBlockSize);
+        const mp3buf = mp3encoder.encodeBuffer(sampleChunk);
+        if (mp3buf.length > 0) {
+            mp3Data.push(mp3buf);
+        }
+    }
+    const mp3buf = mp3encoder.flush();
+    if (mp3buf.length > 0) {
+        mp3Data.push(mp3buf);
+    }
+    
+    return new window.Blob(mp3Data, { type: 'audio/mp3' });
 }
 
 async function processClips(intervals) {
@@ -298,16 +293,14 @@ async function processClips(intervals) {
 
             const renderedBuffer = await offlineCtx.startRendering();
             
-            // To simplify, we mix down to mono for the output WAV
+            // To simplify, we mix down to mono for the output MP3
             const channelData = renderedBuffer.getChannelData(0); 
-            // If stereo is required, interleave channels here. Mono is much lighter.
             
-            const wavData = await encodeWAV(channelData, renderedBuffer.sampleRate);
-            const blob = new Blob([wavData], { type: 'audio/wav' });
+            const blob = await encodeMP3(channelData, renderedBuffer.sampleRate);
             
             // File naming based on interval name
             let safeName = interval.name.replace(/[<>:"/\\|?*]+/g, '_');
-            folder.file(`${safeName}.wav`, blob);
+            folder.file(`${safeName}.mp3`, blob);
         }
 
         const zipBlob = await zip.generateAsync({type: "blob"});
